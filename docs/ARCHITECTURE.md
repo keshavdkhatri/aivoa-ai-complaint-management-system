@@ -123,7 +123,7 @@ This document describes the high-level architecture and data flows of the **AIVO
 3. These evaluated values are returned in the structured JSON and pre-selected in the UI dropdowns.
 
 ### Flow E: SQL Persistence (QMS Ledger)
-1. User clicks the **Save Complaint** button on the UI form.
+1. User clicks the **Commit to QMS Ledger** button on the UI form.
 2. React gathers the current values of all fields from the Redux store.
 3. React makes a `POST /api/save` request containing the full form data.
 4. FastAPI validates the schema and inserts a row into the database table `complaints` using SQL (SQLAlchemy / psycopg2).

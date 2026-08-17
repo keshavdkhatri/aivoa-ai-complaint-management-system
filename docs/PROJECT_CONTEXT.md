@@ -23,26 +23,32 @@ The system specification is established based on the following verified project 
 ---
 
 ## Core System Workflow & UI Layout
-Based on the reference UI screenshot and specifications inside the PDF, the customer complaints module comprises a split-screen dashboard:
+Based on the reference UI screenshot and specifications inside the PDF, the customer complaints module comprises a full-screen split-screen layout:
 
 ### 1. Log Customer Complaint Form (Left Panel)
-- **Origin & Customer Details**:
+- **Section 1: Origin & Customer Details**:
   - *Complaint Source*: Pasted email, pasted text, or uploaded document path.
   - *Customer Name*: Name of the entity submitting the complaint.
-- **Product & Batch Identification**:
+- **Section 2: Product & Batch Identification**:
   - *Product Name*: Active Pharmaceutical Ingredient (API) or Finished Dosage Form (FDF) name.
   - *Product Strength/Grade*: Quantitative strength (e.g., 500mg) or material grade.
-  - *Batch/Lot Number*: Unique manufacturing run identifier.
+  - *Batch / Lot Number*: Unique manufacturing run identifier.
+  - *Affected Quantity*: Numeric quantity with a unit suffix (e.g., kg, tablets).
   - *Manufacturing Date*: Date selector.
   - *Expiry Date*: Date selector.
-  - *Quantity Affected*: Numeric quantity with a unit suffix (e.g., kg, tablets).
-- **Complaint Details**:
-  - *Complaint Type*: Categorization of the issue.
-  - *Complaint Date*: Date selector indicating when the complaint was received.
-  - *Detailed Complaint Description*: Multi-line text field capturing the raw customer complaint.
-- **Initial Assessment & Priority**:
-  - *Initial Severity*: Dropdown list (e.g., Low, Medium, High).
-  - *Priority*: Dropdown list (e.g., Low, Medium, High, Critical).
+- **Section 3: Facility & Material Impact**:
+  - *Originating Site Block*: Site production block (e.g., Block A, Block B).
+  - *Impacted Non-Product Materials (NPM)*: Impact on non-product materials (e.g., packaging material, solvents).
+- **Section 4: Defect Analysis**:
+  - *Complaint Category*: Dropdown classification of the quality defect.
+  - *Complaint Description*: Multi-line text field capturing the raw customer complaint.
+- **Section 5: AI Copilot Risk Assessment**:
+  - *Severity (Suggested)*: Suggested severity classification determined by AI.
+  - *Suggested Next Action*: Next QA steps recommended by AI.
+  - *Initial Risk Assessment*: Multi-line description evaluating the initial risk context.
+
+**Commit Action Button**:
+- **Commit to QMS Ledger**: Persists the validated form data to the secure SQL database.
 
 ### 2. AI Complaint Intake Assistant (Right Panel)
 - **Document Drag & Drop Area**: Prompts the user to browse or drop complaint documents (supports PDF, DOCX, TXT, EML up to 10MB).
@@ -56,7 +62,7 @@ Based on the reference UI screenshot and specifications inside the PDF, the cust
 1. **Intake**: User uploads a digital PDF or pastes raw email text.
 2. **Auto-Population**: The backend extracts structured data matching the form schema and computes the initial risk priority. The UI form fields immediately update with the extracted JSON properties.
 3. **Conversational Correction**: If any details are parsed incorrectly, the user instructs the chatbot (e.g., *"Change product name to Paracetamol and quantity to 50 kg"*). The AI Copilot identifies the specific updates, updates the active form state in Redux, and explains the correction in the chat log.
-4. **QMS Ledger Persistence**: Clicking **Save Complaint** saves the structured records to the SQL database.
+4. **QMS Ledger Persistence**: Clicking **Commit to QMS Ledger** saves the structured records to the SQL database.
 
 ---
 
@@ -75,12 +81,23 @@ Based on the reference UI screenshot and specifications inside the PDF, the cust
 ## In-Scope vs. Out-of-Scope
 
 ### In-Scope Features
+- Full-screen split-screen layout (Left form, Right AI Copilot).
 - Paste text/email processing and digital PDF text extraction.
-- Automatic form pre-fill and dynamic dropdown priority selection.
-- Multi-turn conversational chat correction that incrementally updates active form states.
-- Auditing database ledger table.
+- Automatic form pre-fill and dynamic dropdown risk selection.
+- Multi-turn conversational chat correction that incrementally updates active form states in Redux.
+- Persistent QMS Ledger list view for inspecting committed complaints.
+- Minimal navigation toggling between Intake Assistant and Ledger view.
 
 ### Out-of-Scope Features
+The following modules and features are NOT part of the required assignment scope:
+- Dashboard / analytics dashboard
+- Investigations module
+- CAPA management module
+- Reports module
+- Settings module
+- Support module
+- User login / signup authentication system
+- Other generic enterprise pages or sidebars
 - Production-grade scanned document OCR or handwritten handwriting interpretation.
-- Full user login/signup authentication workflows.
 - Unnecessary microservices, background job queues, or secondary routing frameworks.
+

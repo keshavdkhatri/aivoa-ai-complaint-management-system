@@ -19,9 +19,9 @@ aivoa-ai-complaint-management-system/
 ├── frontend/                     # React UI (Planned)
 │   ├── public/                   # Static assets
 │   └── src/
-│       ├── components/           # UI Components (Form, Sidebar, Chat)
+│       ├── components/           # UI Components (Form, Chat, Ledger)
 │       ├── store/                # Redux State Management
-│       ├── App.js                # Main application component
+│       ├── App.jsx               # Main application entry and view switcher
 │       ├── index.js              # Application entry point
 │       └── index.css             # Main styling using Vanilla CSS and Inter font
 │
@@ -48,10 +48,11 @@ aivoa-ai-complaint-management-system/
 - **`ComplaintForm.jsx`**: Renders the left-hand form inputs categorized into:
   1. Origin & Customer Details
   2. Product & Batch Identification
-  3. Complaint Details
-  4. Initial Assessment & Priority
-- **`AIAssistant.jsx`**: Renders the right-hand panel, including the PDF/Text uploader interface and the chat copilot interface.
-- **`QMSLedger.jsx`**: Renders a simple list/table view showing previously saved complaints pulled from the database.
+  3. Facility & Material Impact
+  4. Defect Analysis
+  5. AI Copilot Risk Assessment
+- **`AICopilot.jsx`**: Renders the right-hand panel, including the PDF/Text uploader interface and the chat copilot interface.
+- **`QMSLedgerView.jsx`**: Renders a simple list/table view showing previously committed complaints pulled from the database.
 
 ### `frontend/src/store/`
 - **`complaintSlice.js`**: Manages the local UI state of the form fields. Provides actions to update single fields or batch-update all fields when AI outputs a response.

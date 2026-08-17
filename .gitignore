@@ -145,3 +145,16 @@ vite.config.ts.timestamp-*
 # Reference materials (contains large video files)
 reference/
 
+# Local databases
+*.db
+
+# Python bytecode and envs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+ENV/
+
