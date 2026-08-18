@@ -131,6 +131,7 @@ def save_complaint(complaint: ComplaintCreate, db: Session = Depends(get_db)):
             # Section 1
             complaint_source=complaint.complaint_source,
             customer_name=complaint.customer_name,
+            complaint_date=complaint.complaint_date,
             # Section 2
             product_name=complaint.product_name,
             product_strength_grade=complaint.product_strength_grade,

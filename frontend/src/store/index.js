@@ -4,6 +4,7 @@ const DEFAULT_FORM_STATE = {
   status: 'Pending Triage', // 'Pending Triage' or 'Ready to Commit'
   complaint_source: '',
   customer_name: '',
+  complaint_date: '',
   product_name: '',
   product_strength_grade: '',
   batch_lot_number: '',

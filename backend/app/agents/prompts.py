@@ -7,6 +7,7 @@ Schema Fields to Extract:
 1. Origin & Customer Details:
    - complaint_source: Email, Letter, Phone Call, Web Portal, etc.
    - customer_name: Name of the hospital, distributor, pharmacy, or patient.
+   - complaint_date: The date the complaint was received or reported (format as YYYY-MM-DD or Month YYYY if present).
 
 2. Product & Batch Identification:
    - product_name: The base drug name (e.g., "Metformin API", "Paracetamol", "Aspirin"). Do not include the strength/grade here if it can be separated.

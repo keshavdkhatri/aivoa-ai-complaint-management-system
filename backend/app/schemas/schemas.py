@@ -7,6 +7,7 @@ class ComplaintBase(BaseModel):
     # Section 1: Origin & Customer Details
     complaint_source: Optional[str] = ""
     customer_name: Optional[str] = ""
+    complaint_date: Optional[str] = ""
 
     # Section 2: Product & Batch Identification
     product_name: Optional[str] = ""

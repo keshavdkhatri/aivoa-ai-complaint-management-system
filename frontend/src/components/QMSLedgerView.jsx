@@ -98,6 +98,7 @@ export default function QMSLedgerView() {
                   <td><strong>#{rec.id}</strong></td>
                   <td>
                     <span className="badge-source">{rec.complaint_source || 'Unknown'}</span>
+                    {rec.complaint_date && <div className="table-subtext" style={{ marginTop: '4px' }}>Date: {rec.complaint_date}</div>}
                   </td>
                   <td>{rec.customer_name || 'N/A'}</td>
                   <td>

@@ -35,6 +35,7 @@ def heuristic_extraction(text: str) -> Dict[str, Any]:
     fields = {
         "complaint_source": "Email",
         "customer_name": "MediLife Care Pharmacy",
+        "complaint_date": "2026-08-18",
         "product_name": "Paracetamol",
         "product_strength_grade": "500mg",
         "batch_lot_number": "B240817",
@@ -84,10 +85,16 @@ def heuristic_extraction(text: str) -> Dict[str, Any]:
         fields["affected_quantity"] = qty_match.group(1).strip()
         
     # Parse dates
+    reported_date_match = re.search(r"(?:reported|received|complaint|date)\s+(?:on|of|at)?\s*(\d{4}-\d{2}-\d{2})", text, re.IGNORECASE)
+    if reported_date_match:
+        fields["complaint_date"] = reported_date_match.group(1).strip()
+        
     date_matches = re.findall(r"(\d{4}-\d{2}-\d{2})", text)
     if len(date_matches) >= 2:
         fields["manufacturing_date"] = date_matches[0]
         fields["expiry_date"] = date_matches[1]
+        if not fields.get("complaint_date") and len(date_matches) >= 3:
+            fields["complaint_date"] = date_matches[2]
     elif len(date_matches) == 1:
         fields["manufacturing_date"] = date_matches[0]
         
@@ -148,6 +155,11 @@ def heuristic_chat(message: str, current_form: Dict[str, Any]) -> Dict[str, Any]
     cust_match = re.search(r"(?:change|set|update)\s+customer(?:\s+name)?\s+to\s+([A-Za-z0-9\s]+)", message, re.IGNORECASE)
     if cust_match:
         updated_fields["customer_name"] = cust_match.group(1).strip()
+        
+    # Complaint Date
+    date_match = re.search(r"(?:change|set|update)\s+(?:complaint\s+)?date\s+to\s+([A-Za-z0-9\-\s]+)", message, re.IGNORECASE)
+    if date_match:
+        updated_fields["complaint_date"] = date_match.group(1).strip()
         
     # Quantity
     qty_match = re.search(r"(?:change|set|update)\s+quantity\s+to\s+([A-Za-z0-9\s]+)", message, re.IGNORECASE)

@@ -115,6 +115,20 @@ export default function ComplaintForm() {
               />
             </div>
           </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="complaint_date">Complaint Date</label>
+              <input
+                type="text"
+                id="complaint_date"
+                value={form.complaint_date || ''}
+                onChange={(e) => handleInputChange('complaint_date', e.target.value)}
+                placeholder="Awaiting AI extraction..."
+                disabled={isLocked}
+              />
+            </div>
+            <div className="form-group empty-spacer"></div>
+          </div>
         </fieldset>
 
         {/* Section 2: Product & Batch Identification */}

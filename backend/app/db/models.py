@@ -10,6 +10,7 @@ class ComplaintModel(Base):
     # Section 1: Origin & Customer Details
     complaint_source = Column(String(255), nullable=True)
     customer_name = Column(String(255), nullable=True)
+    complaint_date = Column(String(100), nullable=True)
 
     # Section 2: Product & Batch Identification
     product_name = Column(String(255), nullable=True)
