@@ -9,15 +9,15 @@ Schema Fields to Extract:
    - customer_name: Name of the hospital, distributor, pharmacy, or patient.
 
 2. Product & Batch Identification:
-   - product_name: The drug name (e.g. Paracetamol, Aspirin, Ibuprofen).
-   - product_strength_grade: Strength (e.g. 500mg, 10%, Grade A).
+   - product_name: The base drug name (e.g., "Metformin API", "Paracetamol", "Aspirin"). Do not include the strength/grade here if it can be separated.
+   - product_strength_grade: Strength, grade, or pharmacopoeia standard (e.g., "500mg", "USP", "IP/BP", "Grade A"). If a product name is mentioned as "Metformin API USP 500mg", extract "Metformin API" into product_name and "USP 500mg" into product_strength_grade.
    - batch_lot_number: The specific batch/lot code.
    - affected_quantity: Quantity with units (e.g., 50 kg, 1000 tablets, 500 bottles).
    - manufacturing_date: Date formatted as YYYY-MM-DD or Month YYYY (if present).
    - expiry_date: Date formatted as YYYY-MM-DD or Month YYYY (if present).
 
 3. Facility & Material Impact:
-   - originating_site_block: The production block or facility site mentioned.
+   - originating_site_block: The production block or facility site. Map it exactly to one of: "Manufacturing", "Packaging", "Warehouse", "Laboratory", "Block A", "Block B", "Block C" (choose the closest matching option). Do not append "Block" or other extra words.
    - impacted_npm: Impact on non-product materials like primary packaging, secondary cartons, labels, glass vials, etc.
 
 4. Defect Analysis:
@@ -42,8 +42,8 @@ Your task is to:
 3. Formulate a friendly, concise natural language reply confirming the action.
 4. Output the result in a JSON structure containing:
    - "reply": The conversational response to display in chat.
-   - "updated_fields": A JSON dictionary of form fields that have changed. For example: {"product_name": "Aspirin", "product_strength_grade": "100mg"}
-   Only include fields that are modified. If no fields are modified, "updated_fields" should be empty {}.
+   - "updated_fields": A JSON dictionary of form fields that have changed. For example: {{"product_name": "Aspirin", "product_strength_grade": "100mg"}}
+   Only include fields that are modified. If no fields are modified, "updated_fields" should be empty {{}}.
 
 Current Form State:
 {current_form}

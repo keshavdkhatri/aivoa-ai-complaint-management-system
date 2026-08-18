@@ -135,32 +135,39 @@ def heuristic_chat(message: str, current_form: Dict[str, Any]) -> Dict[str, Any]
     
     # Check for direct field modifications
     # Product Name
-    prod_match = re.search(r"change\s+product(?:\s+name)?\s+to\s+([A-Za-z0-9\s]+)", message, re.IGNORECASE)
+    prod_match = re.search(r"(?:change|set|update)\s+product(?:\s+name)?\s+to\s+([A-Za-z0-9\s\-\.]+)", message, re.IGNORECASE)
     if prod_match:
-        updated_fields["product_name"] = prod_match.group(1).strip().capitalize()
+        updated_fields["product_name"] = prod_match.group(1).strip()
         
+    # Product Strength
+    strength_match = re.search(r"(?:change|set|update)\s+(?:product\s+)?strength(?:\s+grade)?\s+to\s+([A-Za-z0-9\s]+)", message, re.IGNORECASE)
+    if strength_match:
+        updated_fields["product_strength_grade"] = strength_match.group(1).strip()
+
     # Customer Name
-    cust_match = re.search(r"change\s+customer(?:\s+name)?\s+to\s+([A-Za-z0-9\s]+)", message, re.IGNORECASE)
+    cust_match = re.search(r"(?:change|set|update)\s+customer(?:\s+name)?\s+to\s+([A-Za-z0-9\s]+)", message, re.IGNORECASE)
     if cust_match:
         updated_fields["customer_name"] = cust_match.group(1).strip()
         
     # Quantity
-    qty_match = re.search(r"change\s+quantity\s+to\s+([A-Za-z0-9\s]+)", message, re.IGNORECASE)
+    qty_match = re.search(r"(?:change|set|update)\s+quantity\s+to\s+([A-Za-z0-9\s]+)", message, re.IGNORECASE)
     if qty_match:
         updated_fields["affected_quantity"] = qty_match.group(1).strip()
 
     # Batch/Lot
-    batch_match = re.search(r"change\s+batch\s+to\s+([A-Za-z0-9\-]+)", message, re.IGNORECASE)
+    batch_match = re.search(r"(?:change|set|update)\s+batch\s+to\s+([A-Za-z0-9\-]+)", message, re.IGNORECASE)
     if batch_match:
         updated_fields["batch_lot_number"] = batch_match.group(1).strip()
         
     # Severity
-    sev_match = re.search(r"change\s+severity\s+to\s+(low|medium|high|critical|minor|major)", message, re.IGNORECASE)
+    sev_match = re.search(r"(?:change|set|update)\s+severity\s+to\s+(low|medium|high|critical|minor|major)", message, re.IGNORECASE)
     if sev_match:
         updated_fields["severity"] = sev_match.group(1).strip().capitalize()
 
     # Site Block
-    block_match = re.search(r"change\s+block\s+to\s+([A-Za-z0-9\s]+)", message, re.IGNORECASE)
+    block_match = re.search(r"(?:change|set|update)\s+(?:the\s+)?(?:originating\s+)?(?:site\s+)?block\s+(?:to\s+)?([A-Za-z0-9\s]+)", message, re.IGNORECASE)
+    if not block_match:
+        block_match = re.search(r"change\s+block\s+to\s+([A-Za-z0-9\s]+)", message, re.IGNORECASE)
     if block_match:
         updated_fields["originating_site_block"] = block_match.group(1).strip()
 
@@ -185,6 +192,7 @@ def extract_node(state: AgentState) -> Dict[str, Any]:
     if not groq_api_key or groq_api_key.startswith("your_"):
         # Use fallback heuristic extractor
         extracted = heuristic_extraction(raw_text)
+        print("AIVOA_AGENT_STATUS: HEURISTIC_FALLBACK (Missing/placeholder GROQ_API_KEY for extraction)")
         return {
             "current_form": extracted,
             "agent_reply": "Information successfully extracted from complaint details.",
@@ -196,7 +204,7 @@ def extract_node(state: AgentState) -> Dict[str, Any]:
         llm = ChatGroq(
             temperature=0.0,
             groq_api_key=groq_api_key,
-            model_name="gemma2-9b-it"
+            model_name="openai/gpt-oss-20b"
         )
         
         # Invoke extraction prompt
@@ -209,6 +217,7 @@ def extract_node(state: AgentState) -> Dict[str, Any]:
         cleaned_content = clean_json_string(response.content)
         parsed_fields = json.loads(cleaned_content)
         
+        print("AIVOA_AGENT_STATUS: GROQ_LIVE (Real LLM extraction executed successfully)")
         return {
             "current_form": parsed_fields,
             "agent_reply": "Information successfully extracted via LLM.",
@@ -217,6 +226,7 @@ def extract_node(state: AgentState) -> Dict[str, Any]:
     except Exception as e:
         # If API call fails, log error and fall back to heuristic
         extracted = heuristic_extraction(raw_text)
+        print(f"AIVOA_AGENT_STATUS: GROQ_ERROR (LLM extraction failed: {str(e)})")
         return {
             "current_form": extracted,
             "agent_reply": "Information successfully extracted via fallback engine.",
@@ -231,6 +241,7 @@ def chat_node(state: AgentState) -> Dict[str, Any]:
     # Check if API key is stubbed
     if not groq_api_key or groq_api_key.startswith("your_"):
         result = heuristic_chat(message, current_form)
+        print("AIVOA_AGENT_STATUS: HEURISTIC_FALLBACK (Missing/placeholder GROQ_API_KEY for chat correction)")
         return {
             "agent_reply": result["reply"],
             "updated_fields": result["updated_fields"],
@@ -242,7 +253,7 @@ def chat_node(state: AgentState) -> Dict[str, Any]:
         llm = ChatGroq(
             temperature=0.1,
             groq_api_key=groq_api_key,
-            model_name="gemma2-9b-it"
+            model_name="openai/gpt-oss-20b"
         )
         
         # Build prompt messages
@@ -263,6 +274,7 @@ def chat_node(state: AgentState) -> Dict[str, Any]:
         cleaned_content = clean_json_string(response.content)
         parsed_response = json.loads(cleaned_content)
         
+        print("AIVOA_AGENT_STATUS: GROQ_LIVE (Real LLM chat correction executed successfully)")
         return {
             "agent_reply": parsed_response.get("reply", "I've processed your command."),
             "updated_fields": parsed_response.get("updated_fields", {}),
@@ -271,6 +283,7 @@ def chat_node(state: AgentState) -> Dict[str, Any]:
     except Exception as e:
         # Fall back to heuristic chat
         result = heuristic_chat(message, current_form)
+        print(f"AIVOA_AGENT_STATUS: GROQ_ERROR (LLM chat execution failed: {str(e)})")
         return {
             "agent_reply": result["reply"],
             "updated_fields": result["updated_fields"],

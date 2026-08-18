@@ -101,8 +101,13 @@ export default function QMSLedgerView() {
                   </td>
                   <td>{rec.customer_name || 'N/A'}</td>
                   <td>
-                    <div><strong>{rec.product_name}</strong></div>
-                    <div className="table-subtext">{rec.product_strength_grade} (Lot: {rec.batch_lot_number})</div>
+                    <div>
+                      <strong>
+                        {rec.product_name}
+                        {rec.product_strength_grade ? ` ${rec.product_strength_grade}` : ''}
+                      </strong>
+                    </div>
+                    <div className="table-subtext">Lot: {rec.batch_lot_number || 'N/A'}</div>
                   </td>
                   <td>
                     <div>{rec.originating_site_block || 'N/A'}</div>

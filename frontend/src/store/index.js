@@ -1,7 +1,6 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit';
 
-// Initial state matching the 15 schema fields across 5 sections
-const initialFormState = {
+const DEFAULT_FORM_STATE = {
   status: 'Pending Triage', // 'Pending Triage' or 'Ready to Commit'
   complaint_source: '',
   customer_name: '',
@@ -20,10 +19,36 @@ const initialFormState = {
   initial_risk_assessment: ''
 };
 
+const DEFAULT_CHAT_HISTORY = [
+  {
+    role: 'assistant',
+    content: 'Upload a complaint document or paste text above. I will automatically extract the details and populate the form for you.'
+  }
+];
+
+// Load initial states from localStorage if available
+const getSavedFormState = () => {
+  try {
+    const saved = localStorage.getItem('aivoa_intake_form');
+    return saved ? JSON.parse(saved) : DEFAULT_FORM_STATE;
+  } catch (e) {
+    return DEFAULT_FORM_STATE;
+  }
+};
+
+const getSavedChatHistory = () => {
+  try {
+    const saved = localStorage.getItem('aivoa_intake_chat_history');
+    return saved ? JSON.parse(saved) : DEFAULT_CHAT_HISTORY;
+  } catch (e) {
+    return DEFAULT_CHAT_HISTORY;
+  }
+};
+
 // Form Slice to manage active user/AI inputs
 const formSlice = createSlice({
   name: 'form',
-  initialState: initialFormState,
+  initialState: getSavedFormState(),
   reducers: {
     updateFormField: (state, action) => {
       const { field, value } = action.payload;
@@ -34,7 +59,7 @@ const formSlice = createSlice({
     setFormFields: (state, action) => {
       return { ...state, ...action.payload, status: 'Ready to Commit' };
     },
-    resetForm: () => initialFormState
+    resetForm: () => DEFAULT_FORM_STATE
   }
 });
 
@@ -42,12 +67,7 @@ const formSlice = createSlice({
 const chatSlice = createSlice({
   name: 'chat',
   initialState: {
-    history: [
-      {
-        role: 'assistant',
-        content: 'Upload a complaint document or paste text above. I will automatically extract the details and populate the form for you.'
-      }
-    ],
+    history: getSavedChatHistory(),
     progress: 0,
     isPending: false,
     extractionMessage: ''
@@ -66,12 +86,7 @@ const chatSlice = createSlice({
       state.extractionMessage = action.payload;
     },
     clearChat: (state) => {
-      state.history = [
-        {
-          role: 'assistant',
-          content: 'Upload a complaint document or paste text above. I will automatically extract the details and populate the form for you.'
-        }
-      ];
+      state.history = DEFAULT_CHAT_HISTORY;
       state.progress = 0;
       state.isPending = false;
       state.extractionMessage = '';
@@ -129,5 +144,16 @@ export const store = configureStore({
     chat: chatSlice.reducer,
     view: viewSlice.reducer,
     ledger: ledgerSlice.reducer
+  }
+});
+
+// Subscribe to store updates to persist form and chat states locally
+store.subscribe(() => {
+  try {
+    const state = store.getState();
+    localStorage.setItem('aivoa_intake_form', JSON.stringify(state.form));
+    localStorage.setItem('aivoa_intake_chat_history', JSON.stringify(state.chat.history));
+  } catch (e) {
+    // Ignore localStorage block issues
   }
 });

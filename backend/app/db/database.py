@@ -23,10 +23,11 @@ try:
         conn = test_engine.connect()
         conn.close()
         engine = test_engine
+        print(f"Database Connection Success: Connected to PostgreSQL database.", flush=True)
 except Exception as e:
     # Print warnings for developer context and fallback to local SQLite
-    print(f"Database Connection Warning: Failed to connect to {DATABASE_URL}. Details: {str(e)}")
-    print("Falling back to local SQLite database (sqlite:///./aivoa.db) for demo/robustness.")
+    print(f"Database Connection Warning: Failed to connect to {DATABASE_URL}. Details: {str(e)}", flush=True)
+    print("Falling back to local SQLite database (sqlite:///./aivoa.db) for demo/robustness.", flush=True)
     DATABASE_URL = "sqlite:///./aivoa.db"
     engine = create_engine(
         DATABASE_URL, connect_args={"check_same_thread": False}

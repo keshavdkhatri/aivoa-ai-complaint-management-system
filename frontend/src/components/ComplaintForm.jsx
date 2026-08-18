@@ -10,6 +10,8 @@ export default function ComplaintForm() {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' }); // 'success' or 'error'
 
+  const predefinedBlocks = ["Manufacturing", "Packaging", "Warehouse", "Laboratory", "Block A", "Block B", "Block C"];
+
   const handleInputChange = (field, value) => {
     dispatch(updateFormField({ field, value }));
   };
@@ -66,6 +68,9 @@ export default function ComplaintForm() {
 
   const isLocked = form.status === 'Pending Triage';
 
+  // Check if active site block is a custom/non-predefined value
+  const isCustomBlock = form.originating_site_block && !predefinedBlocks.includes(form.originating_site_block);
+
   return (
     <div className="complaint-form-container">
       <div className="form-header">
@@ -92,7 +97,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="complaint_source"
-                value={form.complaint_source}
+                value={form.complaint_source || ''}
                 onChange={(e) => handleInputChange('complaint_source', e.target.value)}
                 placeholder="Awaiting AI extraction..."
                 disabled={isLocked}
@@ -103,7 +108,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="customer_name"
-                value={form.customer_name}
+                value={form.customer_name || ''}
                 onChange={(e) => handleInputChange('customer_name', e.target.value)}
                 placeholder="Awaiting AI extraction..."
                 disabled={isLocked}
@@ -121,7 +126,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="product_name"
-                value={form.product_name}
+                value={form.product_name || ''}
                 onChange={(e) => handleInputChange('product_name', e.target.value)}
                 placeholder="Awaiting AI extraction..."
                 disabled={isLocked}
@@ -132,7 +137,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="product_strength_grade"
-                value={form.product_strength_grade}
+                value={form.product_strength_grade || ''}
                 onChange={(e) => handleInputChange('product_strength_grade', e.target.value)}
                 placeholder="Awaiting AI extraction..."
                 disabled={isLocked}
@@ -146,7 +151,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="batch_lot_number"
-                value={form.batch_lot_number}
+                value={form.batch_lot_number || ''}
                 onChange={(e) => handleInputChange('batch_lot_number', e.target.value)}
                 placeholder="Awaiting AI extraction..."
                 disabled={isLocked}
@@ -157,7 +162,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="affected_quantity"
-                value={form.affected_quantity}
+                value={form.affected_quantity || ''}
                 onChange={(e) => handleInputChange('affected_quantity', e.target.value)}
                 placeholder="Awaiting AI extraction..."
                 disabled={isLocked}
@@ -171,7 +176,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="manufacturing_date"
-                value={form.manufacturing_date}
+                value={form.manufacturing_date || ''}
                 onChange={(e) => handleInputChange('manufacturing_date', e.target.value)}
                 placeholder="Awaiting AI extraction..."
                 disabled={isLocked}
@@ -182,7 +187,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="expiry_date"
-                value={form.expiry_date}
+                value={form.expiry_date || ''}
                 onChange={(e) => handleInputChange('expiry_date', e.target.value)}
                 placeholder="Awaiting AI extraction..."
                 disabled={isLocked}
@@ -199,18 +204,17 @@ export default function ComplaintForm() {
               <label htmlFor="originating_site_block">Originating Site Block</label>
               <select
                 id="originating_site_block"
-                value={form.originating_site_block}
+                value={form.originating_site_block || ''}
                 onChange={(e) => handleInputChange('originating_site_block', e.target.value)}
                 disabled={isLocked}
               >
                 <option value="">Awaiting AI classification...</option>
-                <option value="Manufacturing">Manufacturing</option>
-                <option value="Packaging">Packaging</option>
-                <option value="Warehouse">Warehouse</option>
-                <option value="Laboratory">Laboratory</option>
-                <option value="Block A">Block A</option>
-                <option value="Block B">Block B</option>
-                <option value="Block C">Block C</option>
+                {predefinedBlocks.map(block => (
+                  <option key={block} value={block}>{block}</option>
+                ))}
+                {isCustomBlock && (
+                  <option value={form.originating_site_block}>{form.originating_site_block}</option>
+                )}
               </select>
             </div>
             <div className="form-group">
@@ -218,7 +222,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="impacted_npm"
-                value={form.impacted_npm}
+                value={form.impacted_npm || ''}
                 onChange={(e) => handleInputChange('impacted_npm', e.target.value)}
                 placeholder="e.g., Primary packaging..."
                 disabled={isLocked}
@@ -236,7 +240,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="complaint_category"
-                value={form.complaint_category}
+                value={form.complaint_category || ''}
                 onChange={(e) => handleInputChange('complaint_category', e.target.value)}
                 placeholder="Awaiting AI classification..."
                 disabled={isLocked}
@@ -248,7 +252,7 @@ export default function ComplaintForm() {
               <label htmlFor="complaint_description">Complaint Description</label>
               <textarea
                 id="complaint_description"
-                value={form.complaint_description}
+                value={form.complaint_description || ''}
                 onChange={(e) => handleInputChange('complaint_description', e.target.value)}
                 placeholder="AI will synthesize the complaint into a formal QMS description..."
                 rows="3"
@@ -272,7 +276,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="severity"
-                value={form.severity}
+                value={form.severity || ''}
                 onChange={(e) => handleInputChange('severity', e.target.value)}
                 placeholder="Awaiting AI evaluation..."
                 disabled={isLocked}
@@ -283,7 +287,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="suggested_next_action"
-                value={form.suggested_next_action}
+                value={form.suggested_next_action || ''}
                 onChange={(e) => handleInputChange('suggested_next_action', e.target.value)}
                 placeholder="Awaiting AI recommendation..."
                 disabled={isLocked}
@@ -296,7 +300,7 @@ export default function ComplaintForm() {
               <input
                 type="text"
                 id="initial_risk_assessment"
-                value={form.initial_risk_assessment}
+                value={form.initial_risk_assessment || ''}
                 onChange={(e) => handleInputChange('initial_risk_assessment', e.target.value)}
                 placeholder="Awaiting AI risk evaluation summary..."
                 disabled={isLocked}
