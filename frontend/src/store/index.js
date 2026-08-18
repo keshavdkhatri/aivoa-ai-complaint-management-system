@@ -45,6 +45,15 @@ const getSavedChatHistory = () => {
   }
 };
 
+const getSavedActiveView = () => {
+  try {
+    const saved = localStorage.getItem('aivoa_active_view');
+    return saved || 'intake';
+  } catch (e) {
+    return 'intake';
+  }
+};
+
 // Form Slice to manage active user/AI inputs
 const formSlice = createSlice({
   name: 'form',
@@ -98,7 +107,7 @@ const chatSlice = createSlice({
 const viewSlice = createSlice({
   name: 'view',
   initialState: {
-    activeView: 'intake' // 'intake' or 'ledger'
+    activeView: getSavedActiveView()
   },
   reducers: {
     setView: (state, action) => {
@@ -147,12 +156,13 @@ export const store = configureStore({
   }
 });
 
-// Subscribe to store updates to persist form and chat states locally
+// Subscribe to store updates to persist form, chat, and view states locally
 store.subscribe(() => {
   try {
     const state = store.getState();
     localStorage.setItem('aivoa_intake_form', JSON.stringify(state.form));
     localStorage.setItem('aivoa_intake_chat_history', JSON.stringify(state.chat.history));
+    localStorage.setItem('aivoa_active_view', state.view.activeView);
   } catch (e) {
     // Ignore localStorage block issues
   }
